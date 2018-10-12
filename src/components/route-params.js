@@ -94,7 +94,7 @@ function paramsTableBody (schema) {
   body.children.unshift(m('tr', [
     m('th', 'Key = default'),
     m('th', 'Type* (tests) in [valids] not in [invalids]'),
-    m('th', 'Examples'),
+    m('th', 'Eaxmples'),
     m('th', 'Description'),
   ]));
 
@@ -134,14 +134,15 @@ function traversingSchema (schema, key) {
 function paramsRow (schema, field) {
   const flags = schema._flags || {};
   const required = flags && flags.presence === 'required';
-  const valids = schema._valids._set;
-  const invalids = schema._invalids._set;
+  const valids = Array.from(schema._valids._set);
+  const invalids = Array.from(schema._invalids._set);
   const tests = schema._tests;
   let type = schema._type;
   if(type === 'alternatives') {
     const schemas = get(schema, '_inner.matches', []);
     type = schemas.map(s => s.schema._type).join(' | ');
   }
+
   return m('tr', [
     m('td', field + (flags.default !== undefined ? ` = ${flags.default}` : '')),
     m('td', [
@@ -151,8 +152,8 @@ function paramsRow (schema, field) {
       tests.length > 0 ? ` [${tests.map(test => {
         return `${test.name}(${test.arg !== undefined ? test.arg : ''})`
       }).join(',')}]` : '',
-      valids.toString() ? ` in [${valids}]` : '',
-      invalids.toString() ? ` not in [${invalids}]` : ''
+      valids.length > 0 ? ` in [${valids.join(", ")}]` : '',
+      invalids.length > 0 ? ` not in [${invalids.join(", ")}]` : ''
     ]),
     m('td', schema._examples.join(' | ')),
     m('td', schema._description || {}),
