@@ -105,6 +105,9 @@ function traversingSchema (schema, key) {
   const result = [];
   key && result.push(paramsRow(schema, key));
   if (schema.isJoi) {
+    if (schema._flags.strip) {
+      return result;
+    }
     if (schema._type === 'object') {
       const children = get(schema, '_inner.children', []);
       if(children) {
